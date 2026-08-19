@@ -1,0 +1,5 @@
+requests
+smolagents
+duckduckgo-search
+pypdf
+pandas
