@@ -29,7 +29,7 @@ This repository contains the implementation of an autonomous AI Agent built with
 ### 1. Clone the repository
 
 ```bash
-git clone [https://github.com/ekrmcakir/hf-agents-unit4-gaia.git](https://github.com/ekrmcakir/hf-agents-unit4-gaia.git)
+git clone https://github.com/ekrmcakir/hf-agents-unit4-gaia.git
 cd hf-agents-unit4-gaia
 ```
 
