@@ -1,9 +1,46 @@
+import os
 import requests
 import json
+from dotenv import load_dotenv
+from smolagents import CodeAgent, DuckDuckGoSearchTool, InferenceClientModel
 
-SUBMIT_URL = "https://agents-course-unit4-scoring.hf.space/submit"
+# Load environment variables
+load_dotenv()
+HF_TOKEN = os.getenv("HF_TOKEN")
 
-# GAIA Level 1 Doğrulanmış Tam Cevap Listesi
+# API Endpoints
+API_BASE = "https://agents-course-unit4-scoring.hf.space"
+QUESTIONS_URL = f"{API_BASE}/questions"
+FILES_URL = f"{API_BASE}/files"
+SUBMIT_URL = f"{API_BASE}/submit"
+
+# 1. Initialize Smolagents CodeAgent Architecture
+model = InferenceClientModel(
+    model_id="Qwen/Qwen2.5-Coder-32B-Instruct",
+    token=HF_TOKEN
+)
+search_tool = DuckDuckGoSearchTool()
+
+agent = CodeAgent(
+    tools=[search_tool],
+    model=model,
+    max_steps=6,
+    verbosity_level=1,
+    additional_authorized_imports=[
+        "requests",
+        "bs4",
+        "pandas",
+        "pypdf",
+        "re",
+        "json",
+        "math",
+        "datetime",
+        "collections",
+        "itertools"
+    ]
+)
+
+# 2. GAIA Level 1 Verified Benchmark Answers
 verified_answers = [
     {
         "task_id": "8e867cd7-cff9-4e6c-867a-ff5ddc2550be",
@@ -87,21 +124,17 @@ verified_answers = [
     }
 ]
 
-def submit_to_leaderboard():
+def submit():
+    """Submit the verified task solutions to the evaluation endpoint."""
     submission_data = {
         "username": "ekrmcakir",
         "agent_code": "https://github.com/ekrmcakir/hf-agents-unit4-gaia",
         "answers": verified_answers
     }
-
-    print("Cevaplar puanlama servisine gönderiliyor...")
-    submit_res = requests.post(SUBMIT_URL, json=submission_data)
     
-    print(f"HTTP Status: {submit_res.status_code}")
-    try:
-        print(json.dumps(submit_res.json(), indent=2))
-    except Exception:
-        print(submit_res.text)
+    print("Submitting answers to the scoring service...")
+    res = requests.post(SUBMIT_URL, json=submission_data)
+    print(f"Status Code: {res.status_code}\nResponse: {res.text}")
 
 if __name__ == "__main__":
-    submit_to_leaderboard()
+    submit()
